@@ -23,7 +23,7 @@ function sanitize(text) {
 }
 
 function escapeRegExp(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return str.replace(/[.*?^${}()|[\]\\]/g, '\\$&')
 }
 
 export default {
@@ -81,19 +81,15 @@ export default {
         return []
       }
 
-      const re = new RegExp(this.escapedQuery, 'gi')
+      const keywords = this.escapedQuery.split('+');
+      const re = new RegExp(keywords[0], 'gi')
+      const re2 = this.checkKeyword(keywords[1])
+      const re3 = this.checkKeyword(keywords[2])
 
       // Filter, sort, and concat
       return this.data
-        .filter(i => i.text.match(re) !== null)
-        .sort((a, b) => {
-          const aIndex = a.text.indexOf(a.text.match(re)[0])
-          const bIndex = b.text.indexOf(b.text.match(re)[0])
-
-          if (aIndex < bIndex) { return -1 }
-          if (aIndex > bIndex) { return 1 }
-          return 0
-        }).slice(0, this.maxMatches)
+        .filter(i => (i.text.match(re) !== null || i.text.match(re2) !== null || i.text.match(re3) !== null))
+        .slice(0, this.maxMatches)
     }
   },
 
@@ -101,7 +97,15 @@ export default {
     handleHit(item, evt) {
       this.$emit('hit', item)
       evt.preventDefault()
-    }
+    },
+      checkKeyword(word){
+          if(typeof word != 'undefined'){
+              if(word.length >= this.minMatchingChars){
+                  return new RegExp(word, 'gi')
+              }
+          }
+          return null
+      },
   }
 }
 </script>
