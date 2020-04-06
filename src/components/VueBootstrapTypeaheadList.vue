@@ -15,7 +15,7 @@
   </div>
 </template>
 
-<script>
+<script type="text/babel">
 import VueBootstrapTypeaheadListItem from './VueBootstrapTypeaheadListItem.vue'
 
 function sanitize(text) {
